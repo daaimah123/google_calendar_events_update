@@ -37,21 +37,21 @@ pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-pyt
 ### Step 4: First Run
 On first run, the script will open a browser window for authentication. After authorizing, a `token.json` file will be created for future use.
 
-**1. Authentication Setup**
+**Authentication Setup**
 - Create Google Cloud project and enable Calendar API
 - Download OAuth credentials
 - First run authenticates and saves token for future use
 
-**2. Finding Events**
+**Finding Events**
 - Search by title, date range, or get all events
 - Returns list of matching events
 
-**3. Bulk Updates**
+**Bulk Updates**
 - Modify title, description, location, or color
 - Dry run mode shows changes before applying
 - Processes all matching events
 
-**4. Execution**
+**Execution**
 - Run with `python scripts/calendar_updater.py` for basic test
 - Use `example_usage.py` for common scenarios
 - Customize for your specific needs
