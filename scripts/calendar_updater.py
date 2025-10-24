@@ -16,13 +16,29 @@ import pytz
 # If modifying these scopes, delete the token.json file
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 
+def load_calendar_config(config_file='calendar_config.json'):
+    """Load calendar configuration from JSON file"""
+    try:
+        with open(config_file, 'r') as f:
+            config = json.load(f)
+        return config.get('calendars', [])
+    except FileNotFoundError:
+        print(f"Warning: {config_file} not found. No calendar config loaded.")
+        return []
+    except json.JSONDecodeError:
+        print(f"Error: {config_file} is not valid JSON.")
+        return []
 
+def select_calendars_by_id(calendar_ids, config_file='calendar_config.json'):
+    """Select specific calendars from config by their IDs"""
+    all_calendars = load_calendar_config(config_file)
+    return [cal for cal in all_calendars if cal['id'] in calendar_ids]
 
-def load_calendar_config():
-    """Load calendar configuration"""
-    with open('calendar_config.json', 'r') as f:
-        config = json.load(f)
-    return config['calendars']
+def select_calendars_by_name(calendar_names, config_file='calendar_config.json'):
+    """Select specific calendars from config by their names"""
+    all_calendars = load_calendar_config(config_file)
+    return [cal for cal in all_calendars if cal['name'] in calendar_names]
+
 
 # Use it:
 calendars = load_calendar_config()
@@ -64,18 +80,18 @@ class CalendarUpdater:
                 token.write(creds.to_json())
         
         return build('calendar', 'v3', credentials=creds)
-    
+
         def list_calendars(self):
-            """List all calendars the user has access to"""
+            """List all calendars the user has access to via Google Calendar API"""
             calendar_list = self.service.calendarList().list().execute()
             
-            print("\nAccessible Calendars:")
-            print("=" * 60)
+            print("\nAccessible Calendars (from Google Calendar API):")
+            print("=" * 70)
             for calendar in calendar_list.get('items', []):
                 print(f"Name: {calendar['summary']}")
                 print(f"ID: {calendar['id']}")
                 print(f"Access: {calendar.get('accessRole', 'unknown')}")
-                print("-" * 60)
+                print("-" * 70)
             
             return calendar_list.get('items', [])
 
@@ -102,6 +118,8 @@ class CalendarUpdater:
         Returns:
             List of event dictionaries
         """
+        print(f"[v0] Searching calendar: {calendar_id}")
+
         # Set default date range if not provided
         if not start_date:
             start_date = datetime.utcnow()
@@ -131,9 +149,9 @@ class CalendarUpdater:
                 e for e in events 
                 if title_contains.lower() in e.get('summary', '').lower()
             ]
-            print(f"[v0] Found {len(events)} events matching '{title_contains}'")
+            print(f"[v0] Found {len(events)} events matching '{title_contains}' on calendar: {calendar_id}")
         else:
-            print(f"[v0] Found {len(events)} events")
+            print(f"[v0] Found {len(events)} events on calendar: {calendar_id}")
         
         if after_date:
             filtered_events = []
@@ -143,10 +161,12 @@ class CalendarUpdater:
                     event_dt = datetime.fromisoformat(event_start.replace('Z', '+00:00'))
                     if after_date and after_date.tzinfo is None:
                         after_date = after_date.replace(tzinfo=pytz.UTC)
-                        if event_dt > after_date:
+                        # Make after_date timezone-aware if it isn't already
+                        after_date_aware = after_date.replace(tzinfo=pytz.UTC) if after_date.tzinfo is None else after_date
+                        if event_dt > after_date_aware:
                             filtered_events.append(event)
             events = filtered_events
-            print(f"[v0] Filtered to {len(events)} events after {after_date.date()}")
+            print(f"[v0] Filtered to {len(events)} events after {after_date.date()} on calendar: {calendar_id}")
         
         return events
     
@@ -177,7 +197,7 @@ class CalendarUpdater:
         shift_delta = timedelta(days=total_days)
         updated_count = 0
         
-        print(f"\n{'[DRY RUN] ' if dry_run else ''}Shifting events by {total_days} days...")
+        print(f"\n{'[DRY RUN] ' if dry_run else ''}Shifting events by {total_days} days on calendar: {calendar_id}")
         
         for event in events:
             event_id = event['id']
@@ -227,7 +247,7 @@ class CalendarUpdater:
                     updated_count += 1
                     
             except Exception as e:
-                print(f"✗ Failed to shift '{event_title}': {str(e)}")
+                print(f"✗ Failed to shift '{event_title}': {str(e)} on calendar: {calendar_id}")
         
         return updated_count
     
@@ -257,7 +277,7 @@ class CalendarUpdater:
         updated_count = 0
         tz = pytz.timezone(timezone)
         
-        print(f"\n{'[DRY RUN] ' if dry_run else ''}Adjusting event times...")
+        print(f"\n{'[DRY RUN] ' if dry_run else ''}Adjusting event times on calendar: {calendar_id}")
         
         for event in events:
             event_id = event['id']
@@ -304,18 +324,18 @@ class CalendarUpdater:
                 full_event['end']['dateTime'] = end_dt.isoformat()
                 
                 if dry_run:
-                    print(f"[DRY RUN] Would update '{event_title}' on {start_dt.date()}: {old_times} → {new_times}")
+                    print(f"[DRY RUN] Would update '{event_title}' on {start_dt.date()}: {old_times} → {new_times} on calendar: {calendar_id}")
                 else:
                     self.service.events().update(
                         calendarId=calendar_id,
                         eventId=event_id,
                         body=full_event
                     ).execute()
-                    print(f"✓ Updated '{event_title}' on {start_dt.date()}: {old_times} → {new_times}")
+                    print(f"✓ Updated '{event_title}' on {start_dt.date()}: {old_times} → {new_times} on calendar: {calendar_id}")
                     updated_count += 1
                     
             except Exception as e:
-                print(f"✗ Failed to adjust '{event_title}': {str(e)}")
+                print(f"✗ Failed to adjust '{event_title}': {str(e)} on calendar: {calendar_id}")
         
         return updated_count
     
@@ -447,7 +467,7 @@ class CalendarUpdater:
                 continue
             
             if dry_run:
-                print(f"[DRY RUN] Would update '{event_title}' with: {updates}")
+                print(f"[DRY RUN] Would update '{event_title}' with: {updates} on calendar: {calendar_id}")
             else:
                 try:
                     # Get full event details
@@ -469,7 +489,7 @@ class CalendarUpdater:
                     print(f"✓ Updated '{event_title}'")
                     updated_count += 1
                 except Exception as e:
-                    print(f"✗ Failed to update '{event_title}': {str(e)}")
+                    print(f"✗ Failed to update '{event_title}': {str(e)} on calendar: {calendar_id}")
         
         return updated_count
 
