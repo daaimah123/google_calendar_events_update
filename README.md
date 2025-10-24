@@ -120,3 +120,28 @@ Convert events to recurring with custom frequency and patterns.
 **Authentication issues**
 - Delete `token.json` and re-authenticate
 - Ensure `credentials.json` is in the project root
+
+## FAQ
+
+**Does it handle multiple events at once?**
+Yes, The scripts are specifically designed for bulk operations on multiple events:
+      - `find_events()` returns a **list** of events (up to `max_results=100` by default)
+      - All update methods (`bulk_update()`, `shift_event_dates()`, `adjust_event_times()`, `make_recurring()`) accept a **list of events** as the first parameter
+      - They loop through all events in the list and apply changes to each one
+
+      ```
+      # This finds MULTIPLE events
+      events = updater.find_events(
+         title_contains="Project Share & Weekly Survey",
+         start_date=datetime.utcnow(),
+         end_date=datetime.utcnow() + timedelta(days=365)
+      )
+
+      # This updates ALL of them at once
+      updater.adjust_event_times(
+         events,  # List of multiple events
+         new_start_time="19:30",
+         new_end_time="20:50",
+         dry_run=True
+      )
+      ```
