@@ -5,6 +5,11 @@ Example usage scenarios for the Calendar Updater
 from datetime import datetime, timedelta
 from calendar_updater import CalendarUpdater, COLOR_IDS
 
+def example_list_all_calendars():
+    """List all calendars you have access to"""
+    updater = CalendarUpdater()
+    calendars = updater.list_calendars()
+    return calendars
 
 def example_1_update_meeting_titles():
     """Update all 'Team Meeting' events to 'Team Sync'"""
@@ -236,6 +241,7 @@ if __name__ == "__main__":
     print("\nUncomment the example you want to run:\n")
     
     # Uncomment one of these to run:
+    # example_list_all_calendars()
     # example_1_update_meeting_titles()
     # example_2_add_zoom_links()
     # example_3_color_code_events()

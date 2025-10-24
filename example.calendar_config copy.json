@@ -1,0 +1,24 @@
+{
+  "calendars": [
+    {
+      "id": "calA@domain.com",
+      "name": "Calendar A",
+      "description": "Main project calendar"
+    },
+    {
+      "id": "calB@domain.com",
+      "name": "Calendar B",
+      "description": "Team events"
+    },
+    {
+      "id": "calC@domain.com",
+      "name": "Calendar C",
+      "description": "Client meetings"
+    },
+    {
+      "id": "calD@domain.com",
+      "name": "Calendar D",
+      "description": "Personal tasks"
+    }
+  ]
+}

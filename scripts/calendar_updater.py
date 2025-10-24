@@ -3,6 +3,7 @@ Google Calendar Bulk Updater
 Allows bulk updates to calendar events based on search criteria
 """
 
+import json
 import os
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional
@@ -14,6 +15,19 @@ import pytz
 
 # If modifying these scopes, delete the token.json file
 SCOPES = ['https://www.googleapis.com/auth/calendar']
+
+
+
+def load_calendar_config():
+    """Load calendar configuration"""
+    with open('calendar_config.json', 'r') as f:
+        config = json.load(f)
+    return config['calendars']
+
+# Use it:
+calendars = load_calendar_config()
+for cal in calendars:
+    print(f"Processing {cal['name']}: {cal['id']}")
 
 class CalendarUpdater:
     def __init__(self, credentials_path='credentials.json', token_path='token.json'):
