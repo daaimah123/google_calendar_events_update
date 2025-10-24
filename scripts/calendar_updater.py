@@ -51,6 +51,20 @@ class CalendarUpdater:
         
         return build('calendar', 'v3', credentials=creds)
     
+        def list_calendars(self):
+            """List all calendars the user has access to"""
+            calendar_list = self.service.calendarList().list().execute()
+            
+            print("\nAccessible Calendars:")
+            print("=" * 60)
+            for calendar in calendar_list.get('items', []):
+                print(f"Name: {calendar['summary']}")
+                print(f"ID: {calendar['id']}")
+                print(f"Access: {calendar.get('accessRole', 'unknown')}")
+                print("-" * 60)
+            
+            return calendar_list.get('items', [])
+
     def find_events(
         self,
         calendar_id='primary',
