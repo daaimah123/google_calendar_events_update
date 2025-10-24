@@ -113,8 +113,10 @@ class CalendarUpdater:
                 event_start = event.get('start', {}).get('dateTime') or event.get('start', {}).get('date')
                 if event_start:
                     event_dt = datetime.fromisoformat(event_start.replace('Z', '+00:00'))
-                    if event_dt > after_date:
-                        filtered_events.append(event)
+                    if after_date and after_date.tzinfo is None:
+                        after_date = after_date.replace(tzinfo=pytz.UTC)
+                        if event_dt > after_date:
+                            filtered_events.append(event)
             events = filtered_events
             print(f"[v0] Filtered to {len(events)} events after {after_date.date()}")
         
