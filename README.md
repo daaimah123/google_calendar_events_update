@@ -170,3 +170,84 @@ updater.adjust_event_times(
 When logging into the OAuth scope `https://www.googleapis.com/auth/calendar`, you will have access to your pre-existing permissions for calendars where you have:
 - **Owner** access - Full control
 - **Make changes to events** - Can modify events
+
+**What are the usecases for this program?**
+### **Event Discovery & Filtering**
+1. List all calendars you have access to with their IDs and permissions
+2. Find all events within a specific date range
+3. Search events by title/keyword across single or multiple calendars
+4. Filter events to only show future occurrences (after today)
+5. Find events without locations, descriptions, or other missing fields
+6. Search for events by color code
+7. Find all-day events vs timed events
+
+### **Basic Event Updates**
+8. Bulk rename events (change title for multiple events)
+9. Update event descriptions (replace or append text)
+10. Add or update event locations
+11. Change event colors for visual organization
+12. Add Zoom/meeting links to event descriptions
+13. Add attendees to multiple events
+14. Update event visibility (public/private)
+
+### **Date & Time Adjustments**
+15. Shift events forward by days/weeks/months (e.g., postpone all meetings by 1 week)
+16. Shift events backward (move events earlier)
+17. Change start time while keeping duration the same
+18. Change end time while keeping start time the same
+19. Change both start and end times
+20. Adjust times across different timezones
+21. Convert event times from one timezone to another
+
+### **Recurring Event Management**
+22. Convert single events to daily recurring
+23. Convert to weekly recurring on specific days (e.g., every Monday and Wednesday)
+24. Convert to monthly recurring
+25. Set recurrence with end date
+26. Set recurrence with occurrence count
+27. Update existing recurring event patterns
+
+### **Multi-Calendar Operations**
+28. Update same event type across multiple calendars (e.g., all team calendars)
+29. Sync event changes across personal and work calendars
+30. Apply consistent formatting/colors across organization calendars
+31. Bulk update events in shared team calendars
+
+### **Event Organization & Cleanup**
+32. Color-code events by type (meetings=blue, 1:1s=green, interviews=red)
+33. Add consistent prefixes/suffixes to event titles
+34. Standardize location formats across events
+35. Add missing information to incomplete events
+36. Archive or update old recurring events
+
+### **Time Management Scenarios**
+37. Adjust all morning meetings to start 30 minutes later
+38. Compress meeting durations (e.g., 60min → 45min for all meetings)
+39. Add buffer time between back-to-back meetings
+40. Shift all Friday meetings to Thursday
+41. Move all afternoon events to morning slots
+
+### **Team & Collaboration**
+42. Add team meeting links to all recurring team events
+43. Update project names across all related events
+44. Add status updates or notes to ongoing project meetings
+45. Standardize meeting titles for consistency
+46. Update contact information in event descriptions
+
+### **Seasonal & Schedule Changes**
+47. Adjust for daylight saving time changes
+48. Update semester/quarter schedules (shift all class times)
+49. Accommodate office moves (update all locations)
+50. Adjust for remote/hybrid work schedule changes
+
+### **Compliance & Documentation**
+51. Add required meeting notes templates to descriptions
+52. Ensure all client meetings have proper location/link information
+53. Add privacy notices or disclaimers to event descriptions
+54. Tag events with project codes or billing information
+
+### **Advanced Filtering & Conditional Updates**
+55. Update only events that match multiple criteria (title AND date range AND no location)
+56. Apply different updates to different event types in one script
+57. Update events based on attendee count or specific attendees
+58. Conditional updates based on event duration
