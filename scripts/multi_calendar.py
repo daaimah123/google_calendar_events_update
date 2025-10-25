@@ -32,7 +32,7 @@ def update_project_share_across_calendars():
             )
             
             if not events:
-                print(f"✓ No matching events in this calendar")
+                print(f"‼️ No matching events in this calendar")
                 continue
             
             # Adjust times from 8:00-8:50pm to 7:30-8:50pm
@@ -48,7 +48,7 @@ def update_project_share_across_calendars():
             total_updated += count
             
         except Exception as e:
-            print(f"✗ Error processing {calendar_id}: {str(e)}")
+            print(f"‼️ Error processing {calendar_id}: {str(e)}")
     
     print(f"\n{'='*70}")
     print(f"SUMMARY: {total_updated} events would be updated across all calendars")

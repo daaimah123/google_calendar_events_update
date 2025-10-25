@@ -113,7 +113,7 @@ def example_5_custom_search_and_update():
         and e.get('location', '') == ''
     ]
     
-    print(f"Found {len(filtered_events)} project events without location")
+    print(f"🔍 Found {len(filtered_events)} project events without location")
     
     updater.bulk_update(
         filtered_events,
@@ -195,7 +195,7 @@ def example_9_project_share_time_adjustment():
         after_date=datetime.utcnow()  # Only events after today
     )
     
-    print(f"\nFound {len(events)} future 'Project Share & Weekly Survey' events")
+    print(f"\n🔍 Found {len(events)} future 'Project Share & Weekly Survey' events")
     
     # Adjust times: 7:30 PM - 8:50 PM Pacific
     updater.adjust_event_times(

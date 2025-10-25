@@ -23,10 +23,10 @@ def load_calendar_config(config_file='calendar_config.json'):
             config = json.load(f)
         return config.get('calendars', [])
     except FileNotFoundError:
-        print(f"Warning: {config_file} not found. No calendar config loaded.")
+        print(f"⚠️ Warning: {config_file} not found. No calendar config loaded.")
         return []
     except json.JSONDecodeError:
-        print(f"Error: {config_file} is not valid JSON.")
+        print(f"‼️ Error: {config_file} is not valid JSON.")
         return []
 
 def select_calendars_by_id(calendar_ids, config_file='calendar_config.json'):
@@ -43,7 +43,7 @@ def select_calendars_by_name(calendar_names, config_file='calendar_config.json')
 # Use it:
 calendars = load_calendar_config()
 for cal in calendars:
-    print(f"Processing {cal['name']}: {cal['id']}")
+    print(f"⏳ Processing {cal['name']}: {cal['id']}")
 
 class CalendarUpdater:
     def __init__(self, credentials_path='credentials.json', token_path='token.json'):
@@ -67,7 +67,7 @@ class CalendarUpdater:
             else:
                 if not os.path.exists(self.credentials_path):
                     raise FileNotFoundError(
-                        f"Credentials file not found at {self.credentials_path}. "
+                        f"‼️ Credentials file not found at {self.credentials_path}. "
                         "Please download it from Google Cloud Console."
                     )
                 flow = InstalledAppFlow.from_client_secrets_file(
@@ -118,7 +118,7 @@ class CalendarUpdater:
         Returns:
             List of event dictionaries
         """
-        print(f"[v0] Searching calendar: {calendar_id}")
+        print(f"🔍 Searching calendar: {calendar_id}")
 
         # Set default date range if not provided
         if not start_date:
@@ -130,7 +130,7 @@ class CalendarUpdater:
         time_min = start_date.isoformat() + 'Z'
         time_max = end_date.isoformat() + 'Z'
         
-        print(f"[v0] Searching for events from {start_date.date()} to {end_date.date()}")
+        print(f"🔍 Searching for events from {start_date.date()} to {end_date.date()}")
         
         events_result = self.service.events().list(
             calendarId=calendar_id,
@@ -149,9 +149,9 @@ class CalendarUpdater:
                 e for e in events 
                 if title_contains.lower() in e.get('summary', '').lower()
             ]
-            print(f"[v0] Found {len(events)} events matching '{title_contains}' on calendar: {calendar_id}")
+            print(f"🔍 Found {len(events)} events matching '{title_contains}' on calendar: {calendar_id}")
         else:
-            print(f"[v0] Found {len(events)} events on calendar: {calendar_id}")
+            print(f"🔍 Found {len(events)} events on calendar: {calendar_id}")
         
         if after_date:
             filtered_events = []
@@ -166,7 +166,7 @@ class CalendarUpdater:
                         if event_dt > after_date_aware:
                             filtered_events.append(event)
             events = filtered_events
-            print(f"[v0] Filtered to {len(events)} events after {after_date.date()} on calendar: {calendar_id}")
+            print(f"🔍 Filtered to {len(events)} events after {after_date.date()} on calendar: {calendar_id}")
         
         return events
     
@@ -243,11 +243,11 @@ class CalendarUpdater:
                         eventId=event_id,
                         body=full_event
                     ).execute()
-                    print(f"✓ Shifted '{event_title}'")
+                    print(f"✅ Shifted '{event_title}'")
                     updated_count += 1
                     
             except Exception as e:
-                print(f"✗ Failed to shift '{event_title}': {str(e)} on calendar: {calendar_id}")
+                print(f"‼️ Failed to shift '{event_title}': {str(e)} on calendar: {calendar_id}")
         
         return updated_count
     
@@ -295,7 +295,7 @@ class CalendarUpdater:
                 end = full_event.get('end', {})
                 
                 if 'dateTime' not in start:
-                    print(f"⊘ Skipping all-day event '{event_title}'")
+                    print(f"🚫 Skipping all-day event '{event_title}'")
                     continue
                 
                 # Parse existing times
@@ -331,11 +331,11 @@ class CalendarUpdater:
                         eventId=event_id,
                         body=full_event
                     ).execute()
-                    print(f"✓ Updated '{event_title}' on {start_dt.date()}: {old_times} → {new_times} on calendar: {calendar_id}")
+                    print(f"✅ Updated '{event_title}' on {start_dt.date()}: {old_times} → {new_times} on calendar: {calendar_id}")
                     updated_count += 1
                     
             except Exception as e:
-                print(f"✗ Failed to adjust '{event_title}': {str(e)} on calendar: {calendar_id}")
+                print(f"‼️ Failed to adjust '{event_title}': {str(e)} on calendar: {calendar_id}")
         
         return updated_count
     
@@ -404,11 +404,11 @@ class CalendarUpdater:
                         eventId=event_id,
                         body=full_event
                     ).execute()
-                    print(f"✓ Made '{event_title}' recurring")
+                    print(f"✅ Made '{event_title}' recurring")
                     updated_count += 1
                     
             except Exception as e:
-                print(f"✗ Failed to make '{event_title}' recurring: {str(e)}")
+                print(f"‼️ Failed to make '{event_title}' recurring: {str(e)}")
         
         return updated_count
 
@@ -486,10 +486,10 @@ class CalendarUpdater:
                         body=full_event
                     ).execute()
                     
-                    print(f"✓ Updated '{event_title}'")
+                    print(f"✅ Updated '{event_title}'")
                     updated_count += 1
                 except Exception as e:
-                    print(f"✗ Failed to update '{event_title}': {str(e)} on calendar: {calendar_id}")
+                    print(f"‼️ Failed to update '{event_title}': {str(e)} on calendar: {calendar_id}")
         
         return updated_count
 
@@ -526,7 +526,7 @@ if __name__ == "__main__":
         )
         
         if events:
-            print(f"\nFound {len(events)} events. Running dry run...")
+            print(f"\n🔍 Found {len(events)} events. Running dry run...")
             
             # Dry run - see what would be updated
             updater.bulk_update(
@@ -567,10 +567,10 @@ if __name__ == "__main__":
             #     dry_run=True
             # )
         else:
-            print("No events found matching criteria.")
+            print("‼️ No events found matching criteria.")
     
     except FileNotFoundError as e:
-        print(f"\n❌ Error: {e}")
+        print(f"\n‼️ Error: {e}")
         print("\nPlease follow setup instructions in README.md")
     except Exception as e:
-        print(f"\n❌ Error: {e}")
+        print(f"\n‼️ Error: {e}")
