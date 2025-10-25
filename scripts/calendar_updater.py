@@ -154,17 +154,19 @@ class CalendarUpdater:
             print(f"🔍 Found {len(events)} events on calendar: {calendar_id}")
         
         if after_date:
+
+            # Make after_date timezone-aware once, before the loop
+            if after_date.tzinfo is None:
+                after_date_aware = after_date.replace(tzinfo=pytz.UTC)
+            else:
+                after_date_aware = after_date
             filtered_events = []
             for event in events:
                 event_start = event.get('start', {}).get('dateTime') or event.get('start', {}).get('date')
                 if event_start:
                     event_dt = datetime.fromisoformat(event_start.replace('Z', '+00:00'))
-                    if after_date and after_date.tzinfo is None:
-                        after_date = after_date.replace(tzinfo=pytz.UTC)
-                        # Make after_date timezone-aware if it isn't already
-                        after_date_aware = after_date.replace(tzinfo=pytz.UTC) if after_date.tzinfo is None else after_date
-                        if event_dt > after_date_aware:
-                            filtered_events.append(event)
+                    if event_dt > after_date_aware:
+                        filtered_events.append(event)
             events = filtered_events
             print(f"🔍 Filtered to {len(events)} events after {after_date.date()} on calendar: {calendar_id}")
         
